@@ -198,7 +198,7 @@ def add_to_manifest(repositories, fallback_branch = None, is_dependency = False)
             "remote": repo_remote, "name": repo_full, "revision": repo_revision })
         else:
        		project = ElementTree.Element("project", attrib = { "path": repo_target,
-            "remote": "github", "name": "AOSPA/%s" % repo_name })
+            "remote": "github", "name": "AOSPA/%s" % repo_name, "revision": repo_revision })
 
         if 'branch' in repository:
             project.set('revision',repository['branch'])
