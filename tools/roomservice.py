@@ -187,18 +187,18 @@ def add_to_manifest(repositories, fallback_branch = None, is_dependency = False)
             except:
                 repo_full = repo_name
 
-        if exists_in_tree(lm, repo_name):
-            print('AOSPA/%s already exists' % (repo_name))
-            continue
+            if exists_in_tree(lm, repo_name):
+                print('AOSPA/%s already exists' % (repo_name))
+                continue
 
-        print ('Adding dependecy: %s -> %s' % (repo_full, repo_target))
+            print ('Adding dependecy: %s -> %s' % (repo_full, repo_target))
 
         if is_dependency:
             project = ElementTree.Element("project", attrib = { "path": repo_target,
             "remote": repo_remote, "name": repo_full, "revision": repo_revision })
         else:
        		project = ElementTree.Element("project", attrib = { "path": repo_target,
-            "remote": "github", "name": "AOSPA/%s" % repo_name })
+            "remote": "github", "name": "AOSPA/%s" % repo_name, "revision": repo_revision })
 
         if 'branch' in repository:
             project.set('revision',repository['branch'])
