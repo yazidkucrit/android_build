@@ -777,7 +777,7 @@ $(recovery_uncompressed_ramdisk): $(MINIGZIP) \
 $(recovery_ramdisk): $(MKBOOTFS) \
 	$(recovery_uncompressed_ramdisk)
 	@echo -e ${PRT_IMG}"----- Making recovery ramdisk ------"${CL_RST}
-	$(MINIGZIP) < $(recovery_uncompressed_ramdisk) > $@
+	$(MINIGZIP) $(recovery_uncompressed_ramdisk) > $@
 
 ifndef BOARD_CUSTOM_BOOTIMG_MK
 $(INSTALLED_RECOVERYIMAGE_TARGET): $(MKBOOTIMG) \
@@ -1343,17 +1343,19 @@ name := $(TARGET_PRODUCT)
 ifeq ($(TARGET_BUILD_TYPE),debug)
   name := $(name)_debug
 endif
-name := $(name)-ota-$(FILE_NAME_TAG)
 
-INTERNAL_OTA_PACKAGE_TARGET := $(PRODUCT_OUT)/$(name).zip
+
+ifdef BOARD_CUSTOM_BOOTIMG_MK
+ include $(BOARD_CUSTOM_BOOTIMG_MK)
+endif
+
+INTERNAL_OTA_PACKAGE_TARGET := $(PRODUCT_OUT)/$(name)-$(ROM_VERSION).zip
 
 $(INTERNAL_OTA_PACKAGE_TARGET): KEY_CERT_PAIR := $(DEFAULT_KEY_CERT_PAIR)
 
 $(INTERNAL_OTA_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE) $(DISTTOOLS)
 	@echo -e ${PRT_HST}"Package OTA: $@"${CL_RST}
 	$(hide) ./build/tools/releasetools/ota_from_target_files -v \
-	MKBOOTIMG=$(BOARD_CUSTOM_BOOTIMG_MK) \
-	$(OTA_FROM_TARGET_SCRIPT) -v \
 	   -p $(HOST_OUT) \
 	   -k $(KEY_CERT_PAIR) \
 	   $(BUILT_TARGET_FILES_PACKAGE) $@
@@ -1390,10 +1392,7 @@ $(INTERNAL_UPDATE_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE) $(DISTTOOLS)
 	   -s $(extensions) \
 	   -p $(HOST_OUT) \
 	   $(BUILT_TARGET_FILES_PACKAGE) $@
-        ifneq ($(TARGET_CUSTOM_RELEASETOOL),)
-            @echo "Running releasetool"
-            $(hide) $(TARGET_CUSTOM_RELEASETOOL)
-        endif
+
 
 .PHONY: updatepackage
 updatepackage: $(INTERNAL_UPDATE_PACKAGE_TARGET)
