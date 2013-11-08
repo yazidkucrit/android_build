@@ -51,7 +51,7 @@ except:
     device = product
 
 if not depsonly:
-    print("Device %s not found. Attempting to retrieve device repository from AOSPA Github (http://github.com/AOSPA)." % device)
+    print("Device %s not found. Attempting to retrieve device repository from AOSPA-legacy Github (http://github.com/AOSPA-legacy)." % device)
 
 repositories = []
 
@@ -71,7 +71,7 @@ def add_auth(githubreq):
 
 page = 1
 while not depsonly:
-    githubreq = urllib.request.Request("https://api.github.com/users/AOSPA/repos?per_page=200&page=%d" % page)
+    githubreq = urllib.request.Request("https://api.github.com/users/AOSPA-legacy/repos?per_page=200&page=%d" % page)
     add_auth(githubreq)
     result = json.loads(urllib.request.urlopen(githubreq).read().decode())
     if len(result) == 0:
@@ -188,7 +188,7 @@ def add_to_manifest(repositories, fallback_branch = None, is_dependency = False)
                 repo_full = repo_name
 
             if exists_in_tree(lm, repo_name):
-                print('AOSPA/%s already exists' % (repo_name))
+                print('AOSPA-legacy/%s already exists' % (repo_name))
                 continue
 
             print ('Adding dependecy: %s -> %s' % (repo_full, repo_target))
@@ -197,7 +197,7 @@ def add_to_manifest(repositories, fallback_branch = None, is_dependency = False)
             "remote": repo_remote, "name": repo_full, "revision": repo_revision })
         else:
        	    project = ElementTree.Element("project", attrib = { "path": repo_target,
-            "remote": "github", "name": "AOSPA/%s" % repo_name, "revision": "kitkat" })
+            "remote": "github", "name": "AOSPA-legacy/%s" % repo_name, "revision": "kitkat" })
 
         if 'branch' in repository:
             project.set('revision',repository['branch'])
@@ -228,7 +228,7 @@ def fetch_dependencies(repo_path, fallback_branch = None):
         fetch_list = []
 
         for dependency in dependencies:
-            if not is_in_manifest("AOSPA/%s" % dependency['repository']):
+            if not is_in_manifest("AOSPA-legacy/%s" % dependency['repository']):
                 fetch_list.append(dependency)
                 syncable_repos.append(dependency['target_path'])
 
@@ -306,4 +306,4 @@ else:
             print("Done")
             sys.exit()
 
-print("Repository for %s not found in the AOSPA Github repository list. If this is in error, you may need to manually add it to your local_manifests/roomservice.xml." % device)
+print("Repository for %s not found in the AOSPA-legacy Github repository list. If this is in error, you may need to manually add it to your local_manifests/roomservice.xml." % device)
