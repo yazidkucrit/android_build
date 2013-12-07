@@ -20,7 +20,6 @@
 PRODUCT_PACKAGES := \
     Dialer \
     Mms \
-    rild \
-    CellBroadcastReceiver
+    rild
 
 PRODUCT_COPY_FILES := \

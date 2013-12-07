@@ -1059,7 +1059,6 @@ userdatatarball-nodeps: $(FS_GET_STATS)
 
 # -----------------------------------------------------------------
 # cache partition image
-ifneq ($(skip_cache.img),true)
 ifdef BOARD_CACHEIMAGE_FILE_SYSTEM_TYPE
 INTERNAL_CACHEIMAGE_FILES := \
     $(filter $(TARGET_OUT_CACHE)/%,$(ALL_DEFAULT_INSTALLED_MODULES))
@@ -1089,7 +1088,7 @@ cacheimage-nodeps: | $(INTERNAL_USERIMAGES_DEPS)
 	$(build-cacheimage-target)
 
 endif # BOARD_CACHEIMAGE_FILE_SYSTEM_TYPE
-endif #skip cache image
+
 
 # -----------------------------------------------------------------
 # vendor partition image
@@ -1318,37 +1317,21 @@ ifneq ($(TARGET_NO_KERNEL),true)
 ifneq ($(recovery_fstab),)
 
 # -----------------------------------------------------------------
-# OTA update package && cache installer image
+# OTA update package
 
 name := $(TARGET_PRODUCT)
 ifeq ($(TARGET_BUILD_TYPE),debug)
   name := $(name)_debug
 endif
 
+
+ifdef BOARD_CUSTOM_BOOTIMG_MK
+ include $(BOARD_CUSTOM_BOOTIMG_MK)
+endif
+
 INTERNAL_OTA_PACKAGE_TARGET := $(PRODUCT_OUT)/$(name)-$(ROM_VERSION).zip
 
 $(INTERNAL_OTA_PACKAGE_TARGET): KEY_CERT_PAIR := $(DEFAULT_KEY_CERT_PAIR)
-
-ifeq ($(BOARD_GENERATE_CACHEIMAGE),true)
-
-CACHE_IMAGE_ZIP := $(name)-cache-$(ROM_VERSION).zip
-CACHE_SIZE := 500M
-
-ifneq ($(BOARD_CACHEIMAGE_SIZE),)
-CACHE_SIZE := $(BOARD_CACHEIMAGE_SIZE)
-endif
-
-$(INTERNAL_OTA_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE) $(DISTTOOLS)
-	@echo -e ${PRT_HST}"Package OTA: $@"${CL_RST}
-	./build/tools/releasetools/ota_from_target_files -v \
-	   -p $(HOST_OUT) \
-	   -k $(KEY_CERT_PAIR) \
-	   $(BUILT_TARGET_FILES_PACKAGE) $@
-	$(hide) @echo -e ${PRT_IMG}"----- Making cache installer image ------"${CL_RST}
-	./build/tools/gapps.sh $(INTERNAL_OTA_PACKAGE_TARGET) $(CACHE_IMAGE_ZIP) $(PRODUCT_OUT) $(CACHE_SIZE) $(HOST_OUT_EXECUTABLES)/mkuserimg.sh
-	@echo -e ${PRT_IMG}"----- Made cache installer image: $(CACHE_IMAGE_ZIP) --------" ${CL_RST}
-
-else
 
 $(INTERNAL_OTA_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE) $(DISTTOOLS)
 	@echo -e ${PRT_HST}"Package OTA: $@"${CL_RST}
@@ -1356,8 +1339,6 @@ $(INTERNAL_OTA_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE) $(DISTTOOLS)
 	   -p $(HOST_OUT) \
 	   -k $(KEY_CERT_PAIR) \
 	   $(BUILT_TARGET_FILES_PACKAGE) $@
-
-endif # BOARD_GENERATE_CACHEIMAGE
 
 .PHONY: otapackage bacon
 otapackage: $(INTERNAL_OTA_PACKAGE_TARGET)
@@ -1386,6 +1367,7 @@ endif
 $(INTERNAL_UPDATE_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE) $(DISTTOOLS)
 	@echo -e ${PRT_HST}"Package:"${CL_RST}" $@"
 	$(hide) ./build/tools/releasetools/img_from_target_files -v \
+	MKBOOTIMG=$(BOARD_CUSTOM_BOOTIMG_MK) \
 	$(IMG_FROM_TARGET_SCRIPT) -v \
 	   -s $(extensions) \
 	   -p $(HOST_OUT) \
