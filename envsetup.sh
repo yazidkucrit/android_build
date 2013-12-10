@@ -1338,8 +1338,8 @@ function dopush()
         echo "Device Found."
     fi
 
-    if (adb shell cat /system/build.prop | grep -q "ro.cm.device=$CM_BUILD");
-    then
+    #if (adb shell cat /system/build.prop | grep -q "ro.cm.device=$CM_BUILD");
+    #then
     # retrieve IP and PORT info if we're using a TCP connection
     TCPIPPORT=$(adb devices | egrep '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+[^0-9]+' \
         | head -1 | awk '{print $1}')
@@ -1388,9 +1388,9 @@ function dopush()
     done
     rm -f $OUT/.log
     return 0
-    else
-        echo "The connected device does not appear to be $CM_BUILD, run away!"
-    fi
+    #else
+    #    echo "The connected device does not appear to be $CM_BUILD, run away!"
+    #fi
 }
 
 alias mmp='dopush mm'
