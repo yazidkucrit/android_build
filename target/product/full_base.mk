@@ -42,7 +42,6 @@ PRODUCT_PACKAGES += \
 #CM Packages
 
 PRODUCT_PACKAGES += \
-    CMFileManager \
     DSPManager \
     LockClock
 
