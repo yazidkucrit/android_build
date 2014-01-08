@@ -38,12 +38,11 @@ PRODUCT_PACKAGES += \
     PhaseBeam \
     VisualizationWallpapers \
     PhotoTable
-    
-#CM Packages
 
+#CM Packages
+  
 PRODUCT_PACKAGES += \
-    DSPManager \
-    LockClock
+      LockClock
 
 # Additional settings used in all AOSP builds
 PRODUCT_PROPERTY_OVERRIDES := \
