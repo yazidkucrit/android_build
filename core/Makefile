@@ -1368,7 +1368,9 @@ ifdef BOARD_CUSTOM_BOOTIMG_MK
  include $(BOARD_CUSTOM_BOOTIMG_MK)
 endif
 
-INTERNAL_OTA_PACKAGE_TARGET := $(PRODUCT_OUT)/$(name)-$(ROM_VERSION).zip
+name := $(name)-ota-$(FILE_NAME_TAG)
+
+INTERNAL_OTA_PACKAGE_TARGET := $(PRODUCT_OUT)/$(name).zip
 
 $(INTERNAL_OTA_PACKAGE_TARGET): KEY_CERT_PAIR := $(DEFAULT_KEY_CERT_PAIR)
 
@@ -1393,6 +1395,8 @@ $(INTERNAL_OTA_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE) $(DISTTOOLS)
 	   --override_device=$(override_device) \
 	   $(BUILT_TARGET_FILES_PACKAGE) $@
 
+CUSTOM_TARGET_PACKAGE := $(PRODUCT_OUT)/$(TARGET_PRODUCT)-$(ROM_VERSION).zip
+
 .PHONY: otapackage bacon
 otapackage: $(INTERNAL_OTA_PACKAGE_TARGET)
 bacon: otapackage
@@ -1400,6 +1404,7 @@ ifneq ($(TARGET_CUSTOM_RELEASETOOL),)
         $(error TARGET_CUSTOM_RELEASETOOL is deprecated)
 endif
 	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(CUSTOM_TARGET_PACKAGE)
+	$(hide) $(MD5SUM) $(CUSTOM_TARGET_PACKAGE) > $(CUSTOM_TARGET_PACKAGE).md5sum
 	@echo -e ${PRT_CPL}"Package complete: $(CUSTOM_TARGET_PACKAGE)"${CL_RST}
 
 # -----------------------------------------------------------------
