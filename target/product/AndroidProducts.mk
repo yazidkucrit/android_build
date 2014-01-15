@@ -59,3 +59,10 @@ PRODUCT_MAKEFILES := \
     $(LOCAL_DIR)/sdk_mips.mk \
     $(LOCAL_DIR)/large_emu_hw.mk
 endif
+ifeq (pa_d802,$(TARGET_PRODUCT))
+    PRODUCT_MAKEFILES += $(LOCAL_DIR)/pa_d802.mk
+    (pa_d803,$(TARGET_PRODUCT))
+    PRODUCT_MAKEFILES += $(LOCAL_DIR)/pa_d803.mk
+    (pa_d801,$(TARGET_PRODUCT))
+    PRODUCT_MAKEFILES += $(LOCAL_DIR)/pa_d801.mk
+endif
