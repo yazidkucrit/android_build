@@ -263,7 +263,7 @@ def fetch_device(device):
         print("WARNING: Trying to fetch a device that's already there")
         return
     git_data = search_github_for_device(device)
-    device_url = get_device_url(git_data)
+    device_url = android_team+"/"+get_device_url(git_data)
     device_dir = parse_device_directory(device_url,device)
     project = create_manifest_project(device_url,
                                       device_dir,
