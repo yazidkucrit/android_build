@@ -30,6 +30,7 @@
 # include defines, and compiler settings for the given architecture
 # version.
 #
+
 ifeq ($(strip $(TARGET_ARCH_VARIANT)),)
 TARGET_ARCH_VARIANT := armv5te
 endif
@@ -49,6 +50,11 @@ endif
 # Specify Target Custom GCC Chains to use:
 TARGET_GCC_VERSION_AND := 4.8
 TARGET_GCC_VERSION_ARM := 4.8
+
+# Define optimization flags:
+OPT_OS := -Os
+OPT_O2 := -O2
+OPT_O3 := -O3
 
 TARGET_ARCH_SPECIFIC_MAKEFILE := $(BUILD_COMBOS)/arch/$(TARGET_ARCH)/$(TARGET_ARCH_VARIANT).mk
 ifeq ($(strip $(wildcard $(TARGET_ARCH_SPECIFIC_MAKEFILE))),)
@@ -78,35 +84,48 @@ endif
 
 TARGET_NO_UNDEFINED_LDFLAGS := -Wl,--no-undefined
 
-TARGET_arm_CFLAGS :=	-O3 \
-                        -fomit-frame-pointer \
-                        -ftree-vectorize \
-                        -fno-inline-functions \
-                        -funswitch-loops \
-                        -fstrict-aliasing    \
-                        -Wstrict-aliasing=3 \
-                        -Werror=strict-aliasing
-
-  
-# Modules can choose to compile some source as thumb.
-TARGET_thumb_CFLAGS :=	-mthumb \
-                        -O3 \
-                        -fomit-frame-pointer \
+TARGET_arm_CFLAGS :=	-fomit-frame-pointer \
                         -fstrict-aliasing \
-                        -Wstrict-aliasing=3 \
-                        -Werror=strict-aliasing \
+                        -funswitch-loops
+
+ifndef OPT_A_LOT
+TARGET_arm_CFLAGS +=    $(OPT_O2)
+else
+TARGET_arm_CFLAGS +=    $(OPT_O3) \
+                        -fno-tree-vectorize \
+                        -fno-inline-functions
+endif
+
+ifdef MAKE_STRICT_GLOBAL
+ifndef STRICT_W_A_LOT
+TARGET_arm_CFLAGS +=    -Wstrict-aliasing=3 \
+                        -Werror=strict-aliasing
+endif
+endif
+
+# Modules can choose to compile some source as thumb.
+TARGET_thumb_CFLAGS :=  -mthumb \
+                        -fomit-frame-pointer
+                        
+ifndef OPT_A_LOT
+TARGET_thumb_CFLAGS +=  -$(OPT_OS)
+else
+TARGET_thumb_CFLAGS +=  $(OPT_O3) \
                         -fno-tree-vectorize \
                         -fno-inline-functions \
                         -fno-unswitch-loops
+endif
 
-ifneq ($(filter 4.8 4.8.% 4.9 4.9.%, $(TARGET_GCC_VERSION_AND)),)
-TARGET_arm_CFLAGS +=  -Wno-unused-parameter \
-                      -Wno-unused-value \
-                      -Wno-unused-function
+ifndef MAKE_STRICT_GLOBAL
+TARGET_thumb_CFLAGS +=  -fno-strict-aliasing
+else
+TARGET_thumb_CFLAGS +=  -fstrict-aliasing
+endif
 
-TARGET_thumb_CFLAGS +=  -Wno-unused-parameter \
-                        -Wno-unused-value \
-                        -Wno-unused-function
+ifdef STRICT_W_A_LOT
+TARGET_thumb_CFLAGS +=  Wstrict-aliasing=3 \
+                        -Werror=strict-aliasing
+endif
 endif
 
 # Set FORCE_ARM_DEBUGGING to "true" in your buildspec.mk
@@ -135,11 +154,18 @@ TARGET_GLOBAL_CFLAGS += \
 			-Werror=format-security \
 			-D_FORTIFY_SOURCE=2 \
 			-fno-short-enums \
-			-Wstrict-aliasing=3 \
-			-Werror=strict-aliasing \
 			$(arch_variant_cflags) \
 			-include $(android_config_h) \
 			-I $(dir $(android_config_h))
+
+ifdef MAKE_STRICT_GLOBAL
+TARGET_GLOBAL_CFLAGS += -fstrict-aliasing
+endif
+
+ifdef STRICT_W_A_LOT
+TARGET_GLOBAL_CFLAGS += -Wstrict-aliasing=3 \
+                        -Werror=strict-aliasing
+endif
 
 # This warning causes dalvik not to build with gcc 4.6+ and -Werror.
 # We cannot turn it off blindly since the option is not available
@@ -176,14 +202,20 @@ TARGET_GLOBAL_CFLAGS += -mthumb-interwork
 TARGET_GLOBAL_CPPFLAGS += -fvisibility-inlines-hidden
 
 # More flags/options can be added here
-TARGET_RELEASE_CFLAGS := \
-			-DNDEBUG \
-			-g \
-			-Wstrict-aliasing=3 \
-                        -Werror=strict-aliasing \
-			-fgcse-after-reload \
-			-frerun-cse-after-loop \
-			-frename-registers
+TARGET_RELEASE_CFLAGS := -DNDEBUG \
+			 -g \
+			 -fgcse-after-reload \
+			 -frerun-cse-after-loop \
+			 -frename-registers
+
+ifdef MAKE_STRICT_GLOBAL
+TARGET_RELEASE_CFLAGS += -fstrict-aliasing
+endif
+
+ifdef STRICT_W_A_LOT
+TARGET_RELEASE_CFLAGS += -Wstrict-aliasing \
+                         -Werror=strict-aliasing
+endif
 
 libc_root := bionic/libc
 libm_root := bionic/libm
