@@ -96,11 +96,9 @@ TARGET_arm_CFLAGS +=    $(OPT_O3) \
                         -fno-inline-functions
 endif
 
-ifdef MAKE_STRICT_GLOBAL
 ifndef STRICT_W_A_LOT
 TARGET_arm_CFLAGS +=    -Wstrict-aliasing=3 \
                         -Werror=strict-aliasing
-endif
 endif
 
 # Modules can choose to compile some source as thumb.
@@ -108,7 +106,7 @@ TARGET_thumb_CFLAGS :=  -mthumb \
                         -fomit-frame-pointer
                         
 ifndef OPT_A_LOT
-TARGET_thumb_CFLAGS +=  -$(OPT_OS)
+TARGET_thumb_CFLAGS +=  $(OPT_OS)
 else
 TARGET_thumb_CFLAGS +=  $(OPT_O3) \
                         -fno-tree-vectorize \
@@ -123,9 +121,8 @@ TARGET_thumb_CFLAGS +=  -fstrict-aliasing
 endif
 
 ifdef STRICT_W_A_LOT
-TARGET_thumb_CFLAGS +=  Wstrict-aliasing=3 \
+TARGET_thumb_CFLAGS +=  -Wstrict-aliasing=3 \
                         -Werror=strict-aliasing
-endif
 endif
 
 # Set FORCE_ARM_DEBUGGING to "true" in your buildspec.mk
