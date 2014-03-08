@@ -58,7 +58,7 @@ OPT_O3 := -O3
 
 # If fstrict-aliasing flag is global make warning level 3 automatic
 ifdef MAKE_STRICT_GLOBAL
-MAKE_STRICT_GLOBAL := STRICT_W_A_LOT
+STRICT_W_A_LOT := true
 endif
 
 TARGET_ARCH_SPECIFIC_MAKEFILE := $(BUILD_COMBOS)/arch/$(TARGET_ARCH)/$(TARGET_ARCH_VARIANT).mk
