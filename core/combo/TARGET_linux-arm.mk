@@ -56,6 +56,11 @@ OPT_OS := -Os
 OPT_O2 := -O2
 OPT_O3 := -O3
 
+# If fstrict-aliasing flag is global make warning level 3 automatic
+ifdef MAKE_STRICT_GLOBAL
+MAKE_STRICT_GLOBAL := STRICT_W_A_LOT
+endif
+
 TARGET_ARCH_SPECIFIC_MAKEFILE := $(BUILD_COMBOS)/arch/$(TARGET_ARCH)/$(TARGET_ARCH_VARIANT).mk
 ifeq ($(strip $(wildcard $(TARGET_ARCH_SPECIFIC_MAKEFILE))),)
 $(error Unknown ARM architecture version: $(TARGET_ARCH_VARIANT))
