@@ -47,7 +47,18 @@ $(combo_target)HAVE_STRLCAT := 0
 $(combo_target)HAVE_KERNEL_MODULES := 0
 
 $(combo_target)GLOBAL_CFLAGS := -fno-exceptions -Wno-multichar
-$(combo_target)RELEASE_CFLAGS := -O3 -g -Wstrict-aliasing=3 -Werror=strict-aliasing -fstrict-aliasing -fno-tree-vectorize -fno-inline-functions -fno-unswitch-loops 
+ifndef OPT_A_LOT
+$(combo_target)RELEASE_CFLAGS := -O2 -g
+else
+$(combo_target)RELEASE_CFLAGS := -O3 -fno-tree-vectorize -fno-inline-functions -fno-unswitch-loops
+endif
+
+ifndef MAKE_STRICT_GLOBAL
+$(combo_target)RELEASE_CFLAGS += -fno-strict-aliasing
+else
+$(combo_target)RELEASE_CFLAGS += -fstrict-aliasing -Wstrict-aliasing=3 -Werror=strict-aliasing
+endif
+
 $(combo_target)GLOBAL_LDFLAGS :=
 $(combo_target)GLOBAL_ARFLAGS := crsP
 
