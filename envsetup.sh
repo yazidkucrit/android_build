@@ -69,6 +69,8 @@ function check_product()
 
 VARIANT_CHOICES=(user userdebug eng)
 
+export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+
 # check to see if the supplied variant is valid
 function check_variant()
 {
