@@ -50,7 +50,7 @@ $(combo_target)GLOBAL_CFLAGS := -fno-exceptions -Wno-multichar
 ifndef OPT_A_LOT
 $(combo_target)RELEASE_CFLAGS := -O2 -g
 else
-$(combo_target)RELEASE_CFLAGS := -O3 -fno-tree-vectorize -fno-inline-functions -fno-unswitch-loops
+$(combo_target)RELEASE_CFLAGS := -O3 -g -fno-tree-vectorize -fno-inline-functions -fno-unswitch-loops
 endif
 
 ifndef MAKE_STRICT_GLOBAL
