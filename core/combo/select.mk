@@ -59,6 +59,13 @@ else
 $(combo_target)RELEASE_CFLAGS += -fstrict-aliasing -Wstrict-aliasing=3 -Werror=strict-aliasing
 endif
 
+ifdef OPT_MEM
+$(combo_target)RELEASE_CFLAGS += -fgcse-las -fipa-pta
+ifndef OPT_A_LOT
+$(combo_target)RELEASE_CFLAGS += -fpredictive-commoning
+endif
+endif
+
 $(combo_target)GLOBAL_LDFLAGS :=
 $(combo_target)GLOBAL_ARFLAGS := crsP
 

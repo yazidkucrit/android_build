@@ -45,7 +45,7 @@ endif
 TARGET_GCC_VERSION_AND := 4.8
 TARGET_GCC_VERSION_ARM := 4.8
 
-# Define optimization flags:
+# Define standard optimization flags:
 OPT_OS := -Os
 OPT_O2 := -O2
 OPT_O3 := -O3
@@ -100,6 +100,14 @@ TARGET_arm_CFLAGS +=    -Wstrict-aliasing=3 \
                         -Werror=strict-aliasing
 endif
 
+ifdef OPT_MEM
+TARGET_arm_CFLAGS +=    -fgcse-las \
+                        -fipa-pta
+ifndef OPT_A_LOT
+TARGET_arm_CFLAGS += -fpredictive-commoning
+endif
+endif
+
 # Modules can choose to compile some source as thumb.
 TARGET_thumb_CFLAGS :=  -mthumb \
                         -fomit-frame-pointer
@@ -122,6 +130,14 @@ endif
 ifdef STRICT_W_A_LOT
 TARGET_thumb_CFLAGS +=  -Wstrict-aliasing=3 \
                         -Werror=strict-aliasing
+endif
+
+ifdef OPT_MEM
+TARGET_thumb_CFLAGS +=  -fgcse-las \
+                        -fipa-pta
+ifndef OPT_A_LOT
+TARGET_thumb_CFLAGS += -fpredictive-commoning
+endif
 endif
 
 # Set FORCE_ARM_DEBUGGING to "true" in your buildspec.mk
@@ -161,6 +177,14 @@ endif
 ifdef STRICT_W_A_LOT
 TARGET_GLOBAL_CFLAGS += -Wstrict-aliasing=3 \
                         -Werror=strict-aliasing
+endif
+
+ifdef OPT_MEM
+TARGET_GLOBAL_CFLAGS += -fgcse-las \
+                        -fipa-pta
+ifndef OPT_A_LOT
+TARGET_GLOBAL_CFLAGS += -fpredictive-commoning
+endif
 endif
 
 # This warning causes dalvik not to build with gcc 4.6+ and -Werror.
@@ -207,8 +231,16 @@ TARGET_RELEASE_CFLAGS += -fstrict-aliasing
 endif
 
 ifdef STRICT_W_A_LOT
-TARGET_RELEASE_CFLAGS += -Wstrict-aliasing \
+TARGET_RELEASE_CFLAGS += -Wstrict-aliasing=3 \
                          -Werror=strict-aliasing
+endif
+
+ifdef OPT_MEM
+TARGET_RELEASE_CFLAGS += -fgcse-las \
+                         -fipa-pta
+ifndef OPT_A_LOT
+TARGET_RELEASE_CFLAGS += -fpredictive-commoning
+endif
 endif
 
 libc_root := bionic/libc
