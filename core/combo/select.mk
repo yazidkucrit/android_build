@@ -23,6 +23,33 @@
 # Build a target string like "linux-arm" or "darwin-x86".
 combo_os_arch := $($(combo_target)OS)-$($(combo_target)ARCH)
 
+# Other AOSPAL authors add more here
+# The current custom AOSPAL optimization table is described as follows:
+# Currnet options are all disabled by default unless invoked by BoardConfig.mk or BoardConfigCommon.mk of the device tree.
+# Disabling through BoardConfig.mk or simular is not enabled.  To disable simply remove it if you have issues using it in the ROM builds
+# Anytime you enable/disable a feature the ROM source most be completely rebuilt clean.
+# Otherwise you are most likely to encounter problems with the ROM build.
+
+# To enable -O3 optimization flags put "OPT_A_LOT := true"
+# To enable -strict-aliasing flag put "MAKE_STRICT_GLOBAL := true"
+# To enable memory optimizations put "OPT_MEMORY := true"
+
+# Define standard optimization flags:
+# -Os = optimize for size, usefull for some parts of android such as thumb flags.  Otherwise code size can become huge.
+# -O2 = standard optimize, code size will not increase much.
+# -O3 = optimize the most, normally causes a log of bugs and huge code size unless some flags are disabled.
+# Highly experimental, use with extreme caution.
+# -fgcse-las & -fpredictive-commoning = memory optimization flags, does not increase code size.  gcse-las is not envoked by any -*O flags.
+# -fpredictive-commoning is enabled by default when using -O3.  So if using -O3 there's no need to pass it twice.
+
+OPT_OS := -Os
+OPT_O2 := -O2
+OPT_O3 := -O3
+OPT_MEM := -fgcse-las
+ifndef OPT_A_LOT
+OPT_MEM += -fpredictive-commoning
+endif
+
 # Set reasonable defaults for the various variables
 
 $(combo_target)CC := $(CC)
@@ -48,9 +75,9 @@ $(combo_target)HAVE_KERNEL_MODULES := 0
 
 $(combo_target)GLOBAL_CFLAGS := -fno-exceptions -Wno-multichar
 ifndef OPT_A_LOT
-$(combo_target)RELEASE_CFLAGS := -O2 -g
+$(combo_target)RELEASE_CFLAGS := $(OPT_O2) -g
 else
-$(combo_target)RELEASE_CFLAGS := -O3 -g -fno-tree-vectorize -fno-inline-functions -fno-unswitch-loops
+$(combo_target)RELEASE_CFLAGS := $(OPT_O3) -g -fno-tree-vectorize -fno-inline-functions -fno-unswitch-loops
 endif
 
 ifndef MAKE_STRICT_GLOBAL
@@ -58,6 +85,11 @@ $(combo_target)RELEASE_CFLAGS += -fno-strict-aliasing
 else
 $(combo_target)RELEASE_CFLAGS += -fstrict-aliasing -Wstrict-aliasing=3 -Werror=strict-aliasing
 endif
+
+ifdef OPT_MEMORY
+$(combo_target)RELEASE_CFLAGS += $(OPT_MEM)
+endif
+
 $(combo_target)GLOBAL_LDFLAGS :=
 $(combo_target)GLOBAL_ARFLAGS := crsP
 
