@@ -69,6 +69,8 @@ function check_product()
 
 VARIANT_CHOICES=(user userdebug eng)
 
+export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+
 # check to see if the supplied variant is valid
 function check_variant()
 {
@@ -120,8 +122,6 @@ function setpaths()
     gccprebuiltdir=$(get_abs_build_var ANDROID_GCC_PREBUILTS)
 
     # defined in core/config.mk
-    targetgccversionarm=$(get_build_var TARGET_GCC_VERSION_ARM)
-    export TARGET_GCC_VERSION_ARM=$targetgccversionarm
     targetgccversionand=$(get_build_var TARGET_GCC_VERSION_AND)
     export TARGET_GCC_VERSION_AND=$targetgccversionand
 

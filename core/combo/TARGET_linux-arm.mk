@@ -35,21 +35,36 @@ ifeq ($(strip $(TARGET_ARCH_VARIANT)),)
 TARGET_ARCH_VARIANT := armv5te
 endif
 
-ifeq ($(strip $(TARGET_GCC_VERSION_AND)),)
-TARGET_GCC_VERSION_AND := 4.7
-else
-TARGET_GCC_VERSION_AND := $(TARGET_GCC_VERSION_AND)
-endif
-
-ifeq ($(strip $(TARGET_GCC_VERSION_ARM)),)
-TARGET_GCC_VERSION_ARM := 4.7
-else
-TARGET_GCC_VERSION_ARM := $(TARGET_GCC_VERSION_ARM)
-endif
-
-# Specify Target Custom GCC Chains to use:
+ifndef GCC_VERSION_AND
 TARGET_GCC_VERSION_AND := 4.8
-TARGET_GCC_VERSION_ARM := 4.8
+else
+TARGET_GCC_VERSION_AND := $(GCC_VERSION_AND)
+endif
+
+ifndef GCC_VERSION_ARM
+TARGET_GCC_VERSION_ARM := $(TARGET_GCC_VERSION_AND)
+else
+TARGET_GCC_VERSION_ARM := $(GCC_VERSION_ARM)
+endif
+
+# Other AOSPAL authors add more here
+# The current custom AOSPAL optimization table is described as follows:
+# Currnet options are all disabled by default unless invoked by BoardConfig.mk or BoardConfigCommon.mk of the device tree.
+# Disabling through BoardConfig.mk or simular is not enabled.  To disable simply remove it if you have issues using it in the ROM builds
+# Anytime you enable/disable a feature the ROM source most be completely rebuilt clean.
+# Otherwise you are most likely to encounter problems with the ROM build.
+
+# To enable -O3 optimization flags put "OPT_A_LOT := true"
+# To enable -strict-aliasing flag put "MAKE_STRICT_GLOBAL := true"
+# To enable memory optimizations put "OPT_MEMORY := true"
+
+# Define standard optimization flags:
+# -Os = optimize for size, usefull for some parts of android such as thumb flags.  Otherwise code size can become huge.
+# -O2 = standard optimize, code size will not increase much.
+# -O3 = optimize the most, normally causes a log of bugs and huge code size unless some flags are disabled.
+# Highly experimental, use with extreme caution.
+# -fgcse-las & -fpredictive-commoning = memory optimization flags, does not increase code size.  gcse-las is not envoked by any -*O flags.
+# -fpredictive-commoning is enabled by default when using -O3.  So if using -O3 there's no need to pass it twice.
 
 # Other AOSPAL authors add more here
 # The current custom AOSPAL optimization table is described as follows:
@@ -134,16 +149,8 @@ endif
 
 # Modules can choose to compile some source as thumb.
 TARGET_thumb_CFLAGS :=  -mthumb \
-                        -fomit-frame-pointer
-                        
-ifndef OPT_A_LOT
-TARGET_thumb_CFLAGS +=  $(OPT_OS)
-else
-TARGET_thumb_CFLAGS +=  $(OPT_O3) \
-                        -fno-tree-vectorize \
-                        -fno-inline-functions \
-                        -fno-unswitch-loops
-endif
+                        -fomit-frame-pointer \
+                        $(OPT_O2) 
 
 ifndef MAKE_STRICT_GLOBAL
 TARGET_thumb_CFLAGS +=  -fno-strict-aliasing
@@ -207,11 +214,9 @@ endif
 # We cannot turn it off blindly since the option is not available
 # in gcc-4.4.x.  We also want to disable sincos optimization globally
 # by turning off the builtin sin function.
-ifneq ($(filter 4.6 4.6.% 4.7 4.7.% 4.8 4.8.% 4.9 4.9.%, $(TARGET_GCC_VERSION_AND)),)
-ifneq ($(filter 4.6 4.6.% 4.7 4.7.% 4.8 4.8.% 4.9 4.9.%, $(TARGET_GCC_VERSION_ARM)),)
+ifneq ($(filter 4.6 4.6.% 4.7 4.7.% 4.8 4.8.% 4.9 4.9.%, $(shell $(TARGET_CC) --version)),)
 TARGET_GLOBAL_CFLAGS += -Wno-unused-but-set-variable -fno-builtin-sin \
 			-fno-strict-volatile-bitfields
-endif
 endif
 
 # This is to avoid the dreaded warning compiler message:
