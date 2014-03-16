@@ -140,7 +140,7 @@ def SetupToolsPath():
     uname = "darwin-x86"
   elif uname == "Linux":
     uname = "linux-x86"
-  gcc_version = os.environ["TARGET_GCC_VERSION"]
+  gcc_version = os.environ["TARGET_GCC_VERSION_AND"]
   prefix = "./prebuilts/gcc/" + uname + "/arm/arm-linux-androideabi-" + \
            gcc_version + "/bin/"
   addr2line_cmd = prefix + "arm-linux-androideabi-addr2line"
