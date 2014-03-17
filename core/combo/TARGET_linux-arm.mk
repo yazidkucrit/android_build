@@ -97,12 +97,8 @@ TARGET_AR := $(TARGET_TOOLS_PREFIX)ar$(HOST_EXECUTABLE_SUFFIX)
 TARGET_OBJCOPY := $(TARGET_TOOLS_PREFIX)objcopy$(HOST_EXECUTABLE_SUFFIX)
 TARGET_LD := $(TARGET_TOOLS_PREFIX)ld$(HOST_EXECUTABLE_SUFFIX)
 TARGET_STRIP := $(TARGET_TOOLS_PREFIX)strip$(HOST_EXECUTABLE_SUFFIX)
-ifeq ($(TARGET_BUILD_VARIANT),user)
-    TARGET_STRIP_COMMAND = $(TARGET_STRIP) --strip-all $< -o $@
-else
-    TARGET_STRIP_COMMAND = $(TARGET_STRIP) --strip-all $< -o $@ && \
+TARGET_STRIP_COMMAND = $(TARGET_STRIP) --strip-all $< -o $@ && \
         $(TARGET_OBJCOPY) --add-gnu-debuglink=$< $@
-endif
 
 TARGET_NO_UNDEFINED_LDFLAGS := -Wl,--no-undefined
 
@@ -130,7 +126,7 @@ endif
 # Modules can choose to compile some source as thumb.
 TARGET_thumb_CFLAGS :=  -mthumb \
                         -fomit-frame-pointer \
-                        $(OPT_O2)
+                        $(OPT_OS)
 
 ifndef MAKE_STRICT_GLOBAL
 TARGET_thumb_CFLAGS +=  -fno-strict-aliasing
