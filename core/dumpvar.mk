@@ -86,26 +86,35 @@ endif
 
 endif # CALLED_FROM_SETUP
 
-
+STRICT := -fstrict-aliasing
 ifneq ($(PRINT_BUILD_CONFIG),)
 HOST_OS_EXTRA:=$(shell python -c "import platform; print(platform.platform())")
 $(info ============================================)
 $(info   PLATFORM_VERSION_CODENAME=$(PLATFORM_VERSION_CODENAME))
 $(info   PLATFORM_VERSION=$(PLATFORM_VERSION))
-$(info   TARGET_PRODUCT=$(TARGET_PRODUCT))
+$(info   TARGET_PRODUCT=$(PSD_TARGET_PRODUCT))
+$(info   TARGET_PRODUCT_VARIANT=$(PSD_VERSION_TAG))
 $(info   TARGET_BUILD_VARIANT=$(TARGET_BUILD_VARIANT))
 $(info   TARGET_BUILD_TYPE=$(TARGET_BUILD_TYPE))
 $(info   TARGET_BUILD_APPS=$(TARGET_BUILD_APPS))
 $(info   TARGET_ARCH=$(TARGET_ARCH))
 $(info   TARGET_ARCH_VARIANT=$(TARGET_ARCH_VARIANT))
 $(info   TARGET_CPU_VARIANT=$(TARGET_CPU_VARIANT))
-$(info   TARGET_GCC_VERSION_ROM=$(TARGET_GCC_VERSION_AND))
-$(info   TARGET_GCC_VERSION_KERNEL=$(TARGET_GCC_VERSION_ARM))
 $(info   HOST_ARCH=$(HOST_ARCH))
 $(info   HOST_OS=$(HOST_OS))
 $(info   HOST_OS_EXTRA=$(HOST_OS_EXTRA))
 $(info   HOST_BUILD_TYPE=$(HOST_BUILD_TYPE))
 $(info   BUILD_ID=$(BUILD_ID))
 $(info   OUT_DIR=$(OUT_DIR))
+$(info ============================================)
+$(info   GCC_VERSION_ROM=$(TARGET_GCC_VERSION_AND))
+ifneq ($(SM_AND_VERSION),)
+$(info   GCC_VERSION_ROM_VARIANT=$(SM_AND_VERSION))
+endif
+$(info   GCC_VERSION_KERNEL=$(TARGET_GCC_VERSION_ARM))
+ifneq ($(SM_ARM_VERSION),)
+$(info   GCC_VERSION_KERNEL_VARIANT=$(SM_ARM_VERSION))
+endif
+$(info   AVAILABLE_GCC_FLAG_OPTIONS= $(OPT_OS) $(OPT_O2) $(OPT_O3) $(OPT_MEM) $(STRICT))
 $(info ============================================)
 endif
