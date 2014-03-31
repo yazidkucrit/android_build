@@ -89,12 +89,12 @@ OPT_OS := -Os
 OPT_O2 := -O2
 OPT_O3 := -O3
 OPT_MEM := -fgcse-las
-ifndef OPT_A_LOT
+ifneq ($(strip $(OPT_A_LOT)),true)
 OPT_MEM += -fpredictive-commoning
 endif
 
 # If fstrict-aliasing flag is global make warning level 3 automatic
-ifdef MAKE_STRICT_GLOBAL
+ifeq ($(strip $(MAKE_STRICT_GLOBAL)),true)
 STRICT_W_A_LOT := true
 endif
 
@@ -126,7 +126,7 @@ TARGET_arm_CFLAGS :=	-fomit-frame-pointer \
                         -fstrict-aliasing \
                         -funswitch-loops
 
-ifndef OPT_A_LOT
+ifneq ($(strip $(OPT_A_LOT)),true)
 TARGET_arm_CFLAGS +=    $(OPT_O2)
 else
 TARGET_arm_CFLAGS +=    $(OPT_O3) \
@@ -134,32 +134,32 @@ TARGET_arm_CFLAGS +=    $(OPT_O3) \
                         -fno-inline-functions
 endif
 
-ifndef STRICT_W_A_LOT
+ifeq ($(strip $(STRICT_W_A_LOT)),true)
 TARGET_arm_CFLAGS +=    -Wstrict-aliasing=3 \
                         -Werror=strict-aliasing
 endif
 
-ifdef OPT_MEMORY
+ifeq ($(strip $(OPT_MEMORY)),true)
 TARGET_arm_CFLAGS += $(OPT_MEM)
 endif
 
 # Modules can choose to compile some source as thumb.
 TARGET_thumb_CFLAGS :=  -mthumb \
                         -fomit-frame-pointer \
-                        $(OPT_OS) 
+                        $(OPT_OS)
 
-ifndef MAKE_STRICT_GLOBAL
+ifneq  ($(strip $(MAKE_STRICT_GLOBAL)),true)
 TARGET_thumb_CFLAGS +=  -fno-strict-aliasing
 else
 TARGET_thumb_CFLAGS +=  -fstrict-aliasing
 endif
 
-ifdef STRICT_W_A_LOT
+ifeq ($(strip $(STRICT_W_A_LOT)),true)
 TARGET_thumb_CFLAGS +=  -Wstrict-aliasing=3 \
                         -Werror=strict-aliasing
 endif
 
-ifdef OPT_MEMORY
+ifeq ($(strip $(OPT_MEMORY)),true)
 TARGET_thumb_CFLAGS +=  $(OPT_MEM)
 endif
 
@@ -193,16 +193,16 @@ TARGET_GLOBAL_CFLAGS += \
 			-include $(android_config_h) \
 			-I $(dir $(android_config_h))
 
-ifdef MAKE_STRICT_GLOBAL
+ifeq  ($(strip $(MAKE_STRICT_GLOBAL)),true)
 TARGET_GLOBAL_CFLAGS += -fstrict-aliasing
 endif
 
-ifdef STRICT_W_A_LOT
+ifeq ($(strip $(STRICT_W_A_LOT)),true)
 TARGET_GLOBAL_CFLAGS += -Wstrict-aliasing=3 \
                         -Werror=strict-aliasing
 endif
 
-ifdef OPT_MEMORY
+ifeq ($(strip $(OPT_MEMORY)),true)
 TARGET_GLOBAL_CFLAGS += $(OPT_MEM)
 endif
 
@@ -245,16 +245,16 @@ TARGET_RELEASE_CFLAGS := -DNDEBUG \
 			 -frerun-cse-after-loop \
 			 -frename-registers
 
-ifdef MAKE_STRICT_GLOBAL
+ifeq  ($(strip $(MAKE_STRICT_GLOBAL)),true)
 TARGET_RELEASE_CFLAGS += -fstrict-aliasing
 endif
 
-ifdef STRICT_W_A_LOT
+ifeq ($(strip $(STRICT_W_A_LOT)),true)
 TARGET_RELEASE_CFLAGS += -Wstrict-aliasing=3 \
                          -Werror=strict-aliasing
 endif
 
-ifdef OPT_MEMORY
+ifeq ($(strip $(OPT_MEMORY)),true)
 TARGET_RELEASE_CFLAGS += $(OPT_MEM)
 endif
 

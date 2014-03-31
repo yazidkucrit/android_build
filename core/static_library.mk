@@ -24,7 +24,7 @@ endif
 ifeq ($(strip $(LOCAL_ENABLE_APROF)),true)
   LOCAL_WHOLE_STATIC_LIBRARIES += libaprof
 endif
-
+LOCAL_DISABLE_GRAPHITE := true
 include $(BUILD_SYSTEM)/binary.mk
 
 ifeq ($(LOCAL_RAW_STATIC_LIBRARY),true)
@@ -38,3 +38,4 @@ endif
 $(LOCAL_BUILT_MODULE): $(built_whole_libraries)
 $(LOCAL_BUILT_MODULE): $(all_objects)
 	$(transform-o-to-static-lib)
+LOCAL_DISABLE_GRAPHITE := false
