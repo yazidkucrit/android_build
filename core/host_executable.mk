@@ -31,3 +31,4 @@ $(LOCAL_BUILT_MODULE): $(all_objects) $(all_libraries)
 	$(transform-host-o-to-executable)
 
 endif  # skip_build_from_source
+
