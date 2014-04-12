@@ -143,7 +143,9 @@ ifeq ($(strip $(LOCAL_ENABLE_APROF)),true)
 endif
 
 # List modules that break with graphite so it can be disabled
-ifneq ($(filter libicui18n libicui18n-host,$(LOCAL_MODULE)),)
+MOD_LIST := libicui18n libicui18n-host
+
+ifneq ($(filter $(MOD_LIST),$(LOCAL_MODULE)),)
 LOCAL_DISABLE_GRAPHITE := true
 else
 LOCAL_DISABLE_GRAPHITE := false
