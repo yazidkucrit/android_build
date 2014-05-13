@@ -142,18 +142,10 @@ ifeq ($(strip $(LOCAL_ENABLE_APROF)),true)
   LOCAL_CPPFLAGS += -fno-omit-frame-pointer -fno-function-sections -pg
 endif
 
-# List modules that break with graphite so it can be disabled
-ifneq ($(filter libicui18n libicui18n-host,$(LOCAL_MODULE)),)
-LOCAL_DISABLE_GRAPHITE := true
-else
-LOCAL_DISABLE_GRAPHITE := false
-endif
-
 ifeq ($(strip $(ENABLE_GRAPHITE)),true)
     ifneq ($(strip $(LOCAL_DISABLE_GRAPHITE)),true)
-        ifeq ($(filter -ffast-math,$(LOCAL_CFLAGS)),)
-            LOCAL_CFLAGS += -fgraphite -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block
-        endif
+        LOCAL_CFLAGS += -fgraphite -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block
+        LOCAL_CPPFLAGS += -fgraphite -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block
     endif
 endif
 
