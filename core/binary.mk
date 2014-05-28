@@ -142,6 +142,29 @@ ifeq ($(strip $(LOCAL_ENABLE_APROF)),true)
   LOCAL_CPPFLAGS += -fno-omit-frame-pointer -fno-function-sections -pg
 endif
 
+#start pthread support
+# pthread support needs flags forced on some art modules with SaberMod host toolchains.
+# This patch also allows more modules to be added to THREADS_MODULE_LIST if needed in future updates.
+# And also in other places like BoardConfig.mk by using "THREADS_MODULE_LIST := insert_module_name"
+# Copywrite (C) 2014 Paul Beeler <pbeeler80@gmail.com>
+ifeq ($(USING_SABER_LINUX),yes)
+ifdef THREADS_MODULE_LIST
+THREADS_MODULE_LIST += oatdump dex2oat
+else
+THREADS_MODULE_LIST := oatdump dex2oat
+endif
+
+ifneq ($(filter $(THREADS_MODULE_LIST),$(LOCAL_MODULE)),)
+ifdef LOCAL_LDLIBS
+LOCAL_LDLIBS += -ldl -lpthread -lrt
+else
+LOCAL_LDLIBS := -ldl -lpthread -lrt
+endif
+endif
+endif
+
+#end pthread support
+
 ifeq ($(strip $(ENABLE_GRAPHITE)),true)
     ifneq ($(strip $(OPT_A_LOT)),true)
         ifneq ($(strip $(LOCAL_DISABLE_GRAPHITE)),true)
