@@ -1407,6 +1407,10 @@ else
     OTA_FROM_TARGET_SCRIPT := $(TARGET_RELEASETOOL_OTA_FROM_TARGET_SCRIPT)
 endif
 
+ifneq ($(TARGET_NO_SEPARATE_RECOVERY),)
+    $(INTERNAL_OTA_PACKAGE_TARGET): separate_recovery := --no_separate_recovery=true
+endif
+
 $(INTERNAL_OTA_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE) $(DISTTOOLS)
 	@echo "$(OTA_FROM_TARGET_SCRIPT)" > $(PRODUCT_OUT)/ota_script_path
 	@echo "$(override_device)" > $(PRODUCT_OUT)/ota_override_device
@@ -1416,7 +1420,9 @@ $(INTERNAL_OTA_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE) $(DISTTOOLS)
 	$(OTA_FROM_TARGET_SCRIPT) -v \
 	   -p $(HOST_OUT) \
 	   -k $(KEY_CERT_PAIR) \
-	   --override_device=$(override_device) $(override_prop) \
+	   --override_device=$(override_device) \
+	   $(override_prop) \
+	   $(separate_recovery) \
 	   $(BUILT_TARGET_FILES_PACKAGE) $@
 
 CUSTOM_TARGET_PACKAGE := $(PRODUCT_OUT)/$(TARGET_PRODUCT)-$(ROM_VERSION).zip

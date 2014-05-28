@@ -64,6 +64,10 @@ Usage:  ota_from_target_files [flags] input_target_files output_ota_package
       first, so that any changes made to the system partition are done
       using the new recovery (new kernel, etc.).
 
+  --no_separate_recovery <boolean>
+      Do not generate recovery image. For devices which do not have a truly
+      separate recovery partition.
+
 """
 
 import sys
@@ -104,6 +108,7 @@ OPTIONS.backuptool = True
 OPTIONS.override_device = 'auto'
 OPTIONS.override_prop = False
 OPTIONS.two_step = False
+OPTIONS.no_separate_recovery = False
 
 def MostPopularKey(d, default):
   """Given a dict, return the key corresponding to the largest
@@ -513,7 +518,8 @@ else if get_stage("%(bcb_dev)s", "stage") == "3/3" then
 
   script.FormatPartition("/system")
   script.Mount("/system")
-  script.UnpackPackageDir("recovery", "/system")
+  if not OPTIONS.no_separate_recovery:
+    script.UnpackPackageDir("recovery", "/system")
   script.UnpackPackageDir("system", "/system")
 
   symlinks = CopySystemFiles(input_zip, output_zip)
@@ -521,9 +527,10 @@ else if get_stage("%(bcb_dev)s", "stage") == "3/3" then
 
   boot_img = common.GetBootableImage("boot.img", "boot.img",
                                      OPTIONS.input_tmp, "BOOT")
-  recovery_img = common.GetBootableImage("recovery.img", "recovery.img",
-                                         OPTIONS.input_tmp, "RECOVERY")
-  MakeRecoveryPatch(OPTIONS.input_tmp, output_zip, recovery_img, boot_img)
+  if not OPTIONS.no_separate_recovery:
+    recovery_img = common.GetBootableImage("recovery.img", "recovery.img",
+                                           OPTIONS.input_tmp, "RECOVERY")
+    MakeRecoveryPatch(OPTIONS.input_tmp, output_zip, recovery_img, boot_img)
 
   Item.GetMetadata(input_zip)
   Item.Get("system").SetPermissions(script)
@@ -723,11 +730,12 @@ def WriteIncrementalOTAPackage(target_zip, source_zip, output_zip):
   updating_boot = (not OPTIONS.two_step and
                    (source_boot.data != target_boot.data))
 
-  source_recovery = common.GetBootableImage(
-      "/tmp/recovery.img", "recovery.img", OPTIONS.source_tmp, "RECOVERY",
-      OPTIONS.source_info_dict)
-  target_recovery = common.GetBootableImage(
-      "/tmp/recovery.img", "recovery.img", OPTIONS.target_tmp, "RECOVERY")
+  if not OPTIONS.no_separate_recovery:
+    source_recovery = common.GetBootableImage(
+        "/tmp/recovery.img", "recovery.img", OPTIONS.source_tmp, "RECOVERY",
+        OPTIONS.source_info_dict)
+    target_recovery = common.GetBootableImage(
+        "/tmp/recovery.img", "recovery.img", OPTIONS.target_tmp, "RECOVERY")
   updating_recovery = (source_recovery.data != target_recovery.data)
 
   # Here's how we divide up the progress bar:
@@ -928,7 +936,7 @@ else
     script.Print("Unpacking new files...")
     script.UnpackPackageDir("system", "/system")
 
-  if updating_recovery:
+  if updating_recovery and not OPTIONS.no_separate_recovery:
     script.Print("Unpacking new recovery...")
     script.UnpackPackageDir("recovery", "/system")
 
@@ -1009,6 +1017,8 @@ def main(argv):
       OPTIONS.override_device = a
     elif o in ("--override_prop"):
       OPTIONS.override_prop = bool(a.lower() == 'true')
+    elif o in ("--no_separate_recovery"):
+      OPTIONS.no_separate_recovery = bool(a.lower() == 'true')
     elif o in ("-2", "--two_step"):
       OPTIONS.two_step = True
     else:
@@ -1027,7 +1037,8 @@ def main(argv):
                                               "aslr_mode=",
                                               "override_device=",
                                               "override_prop=",
-                                              "two_step",  
+                                              "two_step",
+                                              "no_separate_recovery=",
                                               ],
                              extra_option_handler=option_handler)
 
