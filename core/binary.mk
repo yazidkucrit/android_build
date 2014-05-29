@@ -142,11 +142,12 @@ ifeq ($(strip $(LOCAL_ENABLE_APROF)),true)
   LOCAL_CPPFLAGS += -fno-omit-frame-pointer -fno-function-sections -pg
 endif
 
-#start pthread support
-# pthread support needs flags forced on some art modules with SaberMod host toolchains.
+#####################################################################################################
+## Copywrite (C) 2014 author Paul Beeler <pbeeler80@gmail.com>
+## begin pthread support
+# pthread needs static libs for the linker forced on some art modules with SaberMod host toolchains.
 # This patch also allows more modules to be added to THREADS_MODULE_LIST if needed in future updates.
 # And also in other places like BoardConfig.mk by using "THREADS_MODULE_LIST := insert_module_name"
-# Copywrite (C) 2014 Paul Beeler <pbeeler80@gmail.com>
 ifeq ($(USING_SABER_LINUX),yes)
 ifdef THREADS_MODULE_LIST
 THREADS_MODULE_LIST += oatdump dex2oat
@@ -156,23 +157,47 @@ endif
 
 ifneq ($(filter $(THREADS_MODULE_LIST),$(LOCAL_MODULE)),)
 ifdef LOCAL_LDLIBS
-LOCAL_LDLIBS += -ldl -lpthread -lrt
+	LOCAL_LDLIBS += -ldl -lpthread
 else
-LOCAL_LDLIBS := -ldl -lpthread -lrt
+	LOCAL_LDLIBS := -ldl -lpthread
+endif
+ifeq ($(HOST_OS),linux)
+	LOCAL_LDLIBS += -lrt
 endif
 endif
+## end pthread support
+#####################################################################################################
+## begin graphite
+ifeq ($(strip $(ENABLE_GRAPHITE)),true)
+ifdef DISABLE_GRAPHTE_MODULES
+DISABLE_GRAPHTE_MODULES += libjni_filtershow_filters \
+	libstagefright_amrwbenc \
+	libFFTEm \
+	libwebviewchromium \
+	libstagefright_mp3dec \
+	libwebrtc_spl
+else
+DISABLE_GRAPHTE_MODULES := libjni_filtershow_filters \
+	libstagefright_amrwbenc \
+	libFFTEm \
+	libwebviewchromium \
+	libstagefright_mp3dec \
+	libwebrtc_spl
 endif
-
-#end pthread support
+endif
 
 ifeq ($(strip $(ENABLE_GRAPHITE)),true)
-    ifneq ($(strip $(OPT_A_LOT)),true)
-        ifneq ($(strip $(LOCAL_DISABLE_GRAPHITE)),true)
-            LOCAL_CFLAGS += -fgraphite -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block
-            LOCAL_CPPFLAGS += -fgraphite -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block
-        endif
-    endif
+ifeq ($(filter $(DISABLE_GRAPHTE_MODULES),$(LOCAL_MODULE)),)
+ifneq ($(strip $(OPT_A_LOT)),true)
+ifneq ($(strip $(LOCAL_DISABLE_GRAPHITE)),true)
+	LOCAL_CFLAGS += -fgraphite -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block
+	LOCAL_CPPFLAGS += -fgraphite -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block
 endif
+endif
+endif
+endif
+endif
+## end graphite
 
 ###########################################################
 ## Explicitly declare assembly-only __ASSEMBLY__ macro for
