@@ -46,7 +46,6 @@ endif
 # Put the built targets of all shared libraries in a common directory
 # to simplify the link line.
 OVERRIDE_BUILT_MODULE_PATH := $(TARGET_OUT_INTERMEDIATE_LIBRARIES)
-LOCAL_DISABLE_GRAPHITE := true
 include $(BUILD_SYSTEM)/dynamic_binary.mk
 
 
@@ -79,5 +78,4 @@ $(linked_module): $(all_objects) $(all_libraries) \
                   $(LOCAL_ADDITIONAL_DEPENDENCIES) \
                   $(my_target_crtbegin_so_o) $(my_target_crtend_so_o)
 	$(transform-o-to-shared-lib)
-LOCAL_DISABLE_GRAPHITE := false
 endif  # skip_build_from_source
