@@ -187,8 +187,8 @@ endif
 
 ifeq ($(filter $(DISABLE_GRAPHTE_MODULES),$(LOCAL_MODULE)),)
 ifneq ($(OPT_A_LOT),true)
-	LOCAL_CFLAGS += -fgraphite -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block
-	LOCAL_CPPFLAGS += -fgraphite -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block
+	LOCAL_CFLAGS += -fgraphite -floop-flatten -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block
+	LOCAL_CPPFLAGS += -fgraphite -floop-flatten -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block
 endif
 endif
 endif
