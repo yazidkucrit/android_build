@@ -146,14 +146,9 @@ endif
 ## Copywrite (C) 2014 author Paul Beeler <pbeeler80@gmail.com>
 ## begin pthread support
 # pthread needs static libs for the linker forced on some art modules with SaberMod host toolchains.
-# This patch also allows more modules to be added to THREADS_MODULE_LIST if needed in future updates.
-# And also in other places like BoardConfig.mk by using "THREADS_MODULE_LIST := insert_module_name"
+# Add more modules here if needed.
 ifeq ($(USING_SABER_LINUX),yes)
-ifdef THREADS_MODULE_LIST
-THREADS_MODULE_LIST += oatdump dex2oat
-else
 THREADS_MODULE_LIST := oatdump dex2oat
-endif
 
 ifneq ($(filter $(THREADS_MODULE_LIST),$(LOCAL_MODULE)),)
 ifdef LOCAL_LDLIBS
@@ -168,28 +163,18 @@ endif
 ## end pthread support
 #####################################################################################################
 ## begin graphite
-# This patch also allows more modules to be added to DISABLE_GRAPHITE_MODULES if needed in future updates.
-# And also in other places like BoardConfig.mk by using "DISABLE_GRAPHITE_MODULES := insert_module_name"
 
 # Graphite will not work very well with the -O3 flag.
 # To test -O3 with graphite remove the "ifneq ($(OPT_A_LOT),true)" and one "endif" below.
+# Add more modules here if needed.
 ifneq ($(OPT_A_LOT),true)
 ifeq ($(ENABLE_GRAPHITE),true)
-ifdef DISABLE_GRAPHITE_MODULES
-DISABLE_GRAPHITE_MODULES += libjni_filtershow_filters \
-	libstagefright_amrwbenc \
-	libFFTEm \
-	libwebviewchromium \
-	libstagefright_mp3dec \
-	libwebrtc_spl
-else
 DISABLE_GRAPHITE_MODULES := libjni_filtershow_filters \
 	libstagefright_amrwbenc \
 	libFFTEm \
 	libwebviewchromium \
 	libstagefright_mp3dec \
 	libwebrtc_spl
-endif
 
 ifeq ($(filter $(DISABLE_GRAPHITE_MODULES),$(LOCAL_MODULE)),)
 	LOCAL_CFLAGS += -fgraphite -floop-flatten -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block
