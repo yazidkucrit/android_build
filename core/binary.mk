@@ -168,16 +168,22 @@ endif
 ## end pthread support
 #####################################################################################################
 ## begin graphite
+# This patch also allows more modules to be added to DISABLE_GRAPHITE_MODULES if needed in future updates.
+# And also in other places like BoardConfig.mk by using "DISABLE_GRAPHITE_MODULES := insert_module_name"
+
+# Graphite will not work very well with the -O3 flag.
+# To test -O3 with graphite remove the "ifneq ($(OPT_A_LOT),true)" and one "endif" below.
+ifneq ($(OPT_A_LOT),true)
 ifeq ($(ENABLE_GRAPHITE),true)
-ifdef DISABLE_GRAPHTE_MODULES
-DISABLE_GRAPHTE_MODULES += libjni_filtershow_filters \
+ifdef DISABLE_GRAPHITE_MODULES
+DISABLE_GRAPHITE_MODULES += libjni_filtershow_filters \
 	libstagefright_amrwbenc \
 	libFFTEm \
 	libwebviewchromium \
 	libstagefright_mp3dec \
 	libwebrtc_spl
 else
-DISABLE_GRAPHTE_MODULES := libjni_filtershow_filters \
+DISABLE_GRAPHITE_MODULES := libjni_filtershow_filters \
 	libstagefright_amrwbenc \
 	libFFTEm \
 	libwebviewchromium \
@@ -185,8 +191,7 @@ DISABLE_GRAPHTE_MODULES := libjni_filtershow_filters \
 	libwebrtc_spl
 endif
 
-ifeq ($(filter $(DISABLE_GRAPHTE_MODULES),$(LOCAL_MODULE)),)
-ifneq ($(OPT_A_LOT),true)
+ifeq ($(filter $(DISABLE_GRAPHITE_MODULES),$(LOCAL_MODULE)),)
 	LOCAL_CFLAGS += -fgraphite -floop-flatten -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block
 	LOCAL_CPPFLAGS += -fgraphite -floop-flatten -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block
 endif
