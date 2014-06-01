@@ -93,6 +93,33 @@ ifneq ($(strip $(OPT_A_LOT)),true)
 OPT_MEM += -fpredictive-commoning
 endif
 
+# This patch also allows more modules to be added to THREADS_MODULE_LIST if needed in future updates.
+# And also in other places like BoardConfig.mk by using "THREADS_MODULE_LIST := insert_module_name"
+ifdef THREADS_MODULE_LIST
+	THREADS_MODULE_LIST += oatdump dex2oat
+else
+	THREADS_MODULE_LIST := oatdump dex2oat
+endif
+
+# This patch also allows more modules to be added to DISABLE_GRAPHITE_MODULES if needed in future updates.
+# And also in other places like BoardConfig.mk by using "DISABLE_GRAPHITE_MODULES := insert_module_name"
+ifdef DISABLE_GRAPHITE_MODULES
+DISABLE_GRAPHITE_MODULES += libjni_filtershow_filters \
+	libstagefright_amrwbenc \
+	libFFTEm \
+	libwebviewchromium \
+	libstagefright_mp3dec \
+	libwebrtc_spl
+else
+DISABLE_GRAPHITE_MODULES := libjni_filtershow_filters \
+	libstagefright_amrwbenc \
+	libFFTEm \
+	libwebviewchromium \
+	libstagefright_mp3dec \
+	libwebrtc_spl
+endif
+
+
 # If fstrict-aliasing flag is global make warning level 3 automatic
 ifeq ($(strip $(MAKE_STRICT_GLOBAL)),true)
 STRICT_W_A_LOT := true
