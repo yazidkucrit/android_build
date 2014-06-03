@@ -148,17 +148,20 @@ endif
 # pthread needs static libs for the linker forced on some art modules with SaberMod host toolchains.
 # Add more modules here if needed.
 ifeq ($(USING_SABER_LINUX),yes)
-THREADS_MODULE_LIST := oatdump dex2oat
 
 ifneq ($(filter $(THREADS_MODULE_LIST),$(LOCAL_MODULE)),)
-ifdef LOCAL_LDLIBS
-	LOCAL_LDLIBS += -ldl -lpthread
-else
+ifndef LOCAL_LDLIBS
 	LOCAL_LDLIBS := -ldl -lpthread
+else
+	LOCAL_LDLIBS += -ldl -lpthread
 endif
 ifeq ($(HOST_OS),linux)
 	LOCAL_LDLIBS += -lrt
 endif
+
+# Use C and CPP flags so it gets passed to the linker.
+LOCAL_CFLAGS += $(THREAD_FLAGS)
+LOCAL_CPPFLAGS += $(THREAD_FLAGS)
 endif
 ## end pthread support
 #####################################################################################################
@@ -169,12 +172,6 @@ endif
 # Add more modules here if needed.
 ifneq ($(OPT_A_LOT),true)
 ifeq ($(ENABLE_GRAPHITE),true)
-DISABLE_GRAPHITE_MODULES := libjni_filtershow_filters \
-	libstagefright_amrwbenc \
-	libFFTEm \
-	libwebviewchromium \
-	libstagefright_mp3dec \
-	libwebrtc_spl
 
 ifeq ($(filter $(DISABLE_GRAPHITE_MODULES),$(LOCAL_MODULE)),)
 	LOCAL_CFLAGS += -fgraphite -floop-flatten -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block
