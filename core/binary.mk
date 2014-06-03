@@ -150,14 +150,18 @@ endif
 ifeq ($(USING_SABER_LINUX),yes)
 
 ifneq ($(filter $(THREADS_MODULE_LIST),$(LOCAL_MODULE)),)
-ifdef LOCAL_LDLIBS
-	LOCAL_LDLIBS += -ldl -lpthread
-else
+ifndef LOCAL_LDLIBS
 	LOCAL_LDLIBS := -ldl -lpthread
+else
+	LOCAL_LDLIBS += -ldl -lpthread
 endif
 ifeq ($(HOST_OS),linux)
 	LOCAL_LDLIBS += -lrt
 endif
+
+# Use C and CPP flags so it gets passed to the linker.
+LOCAL_CFLAGS += $(THREAD_FLAGS)
+LOCAL_CPPFLAGS += $(THREAD_FLAGS)
 endif
 ## end pthread support
 #####################################################################################################
