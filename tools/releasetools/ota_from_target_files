@@ -1027,8 +1027,8 @@ def main(argv):
                                               "worker_threads=",
                                               "aslr_mode=",
                                               "override_device=",
-                                              "override_prop="],
-                                              "two_step",
+                                              "override_prop=",
+                                              "two_step",  
                                               ],
                              extra_option_handler=option_handler)
 
