@@ -130,6 +130,10 @@ define clean-module-folder
     fi
 endef
 
+ifeq ($(TARGET_ARCH),arm)
+    ARM_CROSS_COMPILE:=CROSS_COMPILE="$(ARM_EABI_TOOLCHAIN)/arm-eabi-"
+endif
+
 ifeq ($(HOST_OS),darwin)
   MAKE_FLAGS := C_INCLUDE_PATH=$(ANDROID_BUILD_TOP)/external/elfutils/libelf
 endif
