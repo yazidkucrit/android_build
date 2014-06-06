@@ -146,53 +146,36 @@ endif
 ## Copywrite (C) 2014 author Paul Beeler <pbeeler80@gmail.com>
 ## begin pthread support
 # pthread needs static libs for the linker forced on some art modules with SaberMod host toolchains.
-# This patch also allows more modules to be added to THREADS_MODULE_LIST if needed in future updates.
-# And also in other places like BoardConfig.mk by using "THREADS_MODULE_LIST := insert_module_name"
+# Add more modules here if needed.
 ifeq ($(USING_SABER_LINUX),yes)
-ifdef THREADS_MODULE_LIST
-THREADS_MODULE_LIST += oatdump dex2oat
-else
-THREADS_MODULE_LIST := oatdump dex2oat
-endif
 
 ifneq ($(filter $(THREADS_MODULE_LIST),$(LOCAL_MODULE)),)
-ifdef LOCAL_LDLIBS
-	LOCAL_LDLIBS += -ldl -lpthread
-else
+ifndef LOCAL_LDLIBS
 	LOCAL_LDLIBS := -ldl -lpthread
+else
+	LOCAL_LDLIBS += -ldl -lpthread
 endif
 ifeq ($(HOST_OS),linux)
 	LOCAL_LDLIBS += -lrt
 endif
+
+# Use C and CPP flags so it gets passed to the linker.
+LOCAL_CFLAGS += $(THREAD_FLAGS)
+LOCAL_CPPFLAGS += $(THREAD_FLAGS)
 endif
 ## end pthread support
 #####################################################################################################
 ## begin graphite
-ifeq ($(strip $(ENABLE_GRAPHITE)),true)
-ifdef DISABLE_GRAPHTE_MODULES
-DISABLE_GRAPHTE_MODULES += libjni_filtershow_filters \
-	libstagefright_amrwbenc \
-	libFFTEm \
-	libwebviewchromium \
-	libstagefright_mp3dec \
-	libwebrtc_spl
-else
-DISABLE_GRAPHTE_MODULES := libjni_filtershow_filters \
-	libstagefright_amrwbenc \
-	libFFTEm \
-	libwebviewchromium \
-	libstagefright_mp3dec \
-	libwebrtc_spl
-endif
-endif
 
-ifeq ($(strip $(ENABLE_GRAPHITE)),true)
-ifeq ($(filter $(DISABLE_GRAPHTE_MODULES),$(LOCAL_MODULE)),)
-ifneq ($(strip $(OPT_A_LOT)),true)
-ifneq ($(strip $(LOCAL_DISABLE_GRAPHITE)),true)
-	LOCAL_CFLAGS += -fgraphite -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block
-	LOCAL_CPPFLAGS += -fgraphite -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block
-endif
+# Graphite will not work very well with the -O3 flag.
+# To test -O3 with graphite remove the "ifneq ($(OPT_A_LOT),true)" and one "endif" below.
+# Add more modules here if needed.
+ifneq ($(OPT_A_LOT),true)
+ifeq ($(ENABLE_GRAPHITE),true)
+
+ifeq ($(filter $(DISABLE_GRAPHITE_MODULES),$(LOCAL_MODULE)),)
+	LOCAL_CFLAGS += -fgraphite -floop-flatten -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block
+	LOCAL_CPPFLAGS += -fgraphite -floop-flatten -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block
 endif
 endif
 endif
