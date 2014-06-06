@@ -80,12 +80,6 @@ else
 $(combo_target)RELEASE_CFLAGS := $(OPT_O3) -g -fno-tree-vectorize -fno-inline-functions -fno-unswitch-loops
 endif
 
-ifndef MAKE_STRICT_GLOBAL
-$(combo_target)RELEASE_CFLAGS += -fno-strict-aliasing
-else
-$(combo_target)RELEASE_CFLAGS += -fstrict-aliasing -Wstrict-aliasing=3 -Werror=strict-aliasing
-endif
-
 ifdef OPT_MEMORY
 $(combo_target)RELEASE_CFLAGS += $(OPT_MEM)
 endif
