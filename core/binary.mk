@@ -172,7 +172,6 @@ endif
 # Add more modules here if needed.
 ifneq ($(OPT_A_LOT),true)
 ifeq ($(ENABLE_GRAPHITE),true)
-
 ifeq ($(filter $(DISABLE_GRAPHITE_MODULES),$(LOCAL_MODULE)),)
 	LOCAL_CFLAGS += -fgraphite -floop-flatten -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block
 	LOCAL_CPPFLAGS += -fgraphite -floop-flatten -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block
@@ -181,6 +180,16 @@ endif
 endif
 endif
 ## end graphite
+
+## begin strict-aliasing
+# modular strict-aliasing flags
+ifeq ($(MAKE_STRICT_GLOBAL),true)
+ifeq ($(filter $(DISABLE_STRICT_MODULES),$(LOCAL_MODULE)),)
+LOCAL_CFLAGS += $(STRICT_FLAGS)
+LOCAL_CPPFLAGS += $(STRICT_FLAGS)
+endif
+endif
+# end strict-aliasing
 
 ###########################################################
 ## Explicitly declare assembly-only __ASSEMBLY__ macro for
