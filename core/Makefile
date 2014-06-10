@@ -652,6 +652,8 @@ define generate-userimage-prop-dictionary
 $(if $(INTERNAL_USERIMAGES_EXT_VARIANT),$(hide) echo "fs_type=$(INTERNAL_USERIMAGES_EXT_VARIANT)" >> $(1))
 $(if $(BOARD_SYSTEMIMAGE_PARTITION_SIZE),$(hide) echo "system_size=$(BOARD_SYSTEMIMAGE_PARTITION_SIZE)" >> $(1))
 $(if $(BOARD_USERDATAIMAGE_PARTITION_SIZE),$(hide) echo "userdata_size=$(BOARD_USERDATAIMAGE_PARTITION_SIZE)" >> $(1))
+$(if $(BOARD_USERDATAEXTRAIMAGE_PARTITION_SIZE),$(hide) echo "userdataextra_size=$(BOARD_USERDATAEXTRAIMAGE_PARTITION_SIZE)" >> $(1))
+$(if $(BOARD_USERDATAEXTRAIMAGE_PARTITION_NAME),$(hide) echo "userdataextra_name=$(BOARD_USERDATAEXTRAIMAGE_PARTITION_NAME)" >> $(1))
 $(if $(BOARD_CACHEIMAGE_FILE_SYSTEM_TYPE),$(hide) echo "cache_fs_type=$(BOARD_CACHEIMAGE_FILE_SYSTEM_TYPE)" >> $(1))
 $(if $(BOARD_CACHEIMAGE_PARTITION_SIZE),$(hide) echo "cache_size=$(BOARD_CACHEIMAGE_PARTITION_SIZE)" >> $(1))
 $(if $(BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE),$(hide) echo "vendor_fs_type=$(BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE)" >> $(1))
@@ -1397,6 +1399,9 @@ else
     OTA_FROM_TARGET_SCRIPT := $(TARGET_RELEASETOOL_OTA_FROM_TARGET_SCRIPT)
 endif
 
+BOOT_ZIP_FROM_IMAGE_SCRIPT := ./build/tools/releasetools/boot_flash_from_image
+KERNEL_PATH := $(TARGET_KERNEL_SOURCE)/arch/arm/configs/$(TARGET_KERNEL_CONFIG)
+
 $(INTERNAL_OTA_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE) $(DISTTOOLS)
 	@echo "$(OTA_FROM_TARGET_SCRIPT)" > $(PRODUCT_OUT)/ota_script_path
 	@echo "$(override_device)" > $(PRODUCT_OUT)/ota_override_device
@@ -1418,13 +1423,14 @@ endif
 BOOT_ZIP_FROM_IMAGE_SCRIPT := ./build/tools/releasetools/boot_flash_from_image
 KERNEL_PATH := $(TARGET_KERNEL_SOURCE)/arch/arm/configs/$(TARGET_KERNEL_CONFIG)
 
-.PHONY: bootzip otapackage bacon
+.PHONY: otapackage bacon bootzip
+otapackage: $(INTERNAL_OTA_PACKAGE_TARGET)
 bootzip: bootimage
 	$(BOOT_ZIP_FROM_IMAGE_SCRIPT) \
 	   $(recovery_fstab) \
 	   $(OUT) \
 	   $(TARGET_DEVICE)
-otapackage: $(INTERNAL_OTA_PACKAGE_TARGET)
+
 bacon: otapackage
 ifneq ($(TARGET_CUSTOM_RELEASETOOL),)
         $(error TARGET_CUSTOM_RELEASETOOL is deprecated)
