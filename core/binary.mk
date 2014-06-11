@@ -191,6 +191,12 @@ endif
 endif
 # end strict-aliasing
 
+# begin unused-parameter warning fix
+ifneq ($(filter $(NO_ERROR_UP),$(LOCAL_MODULE)),)
+LOCAL_CFLAGS += -Wno-error=unused-parameter
+endif
+# end unused-parameter warning fix
+
 ###########################################################
 ## Explicitly declare assembly-only __ASSEMBLY__ macro for
 ## assembly source
