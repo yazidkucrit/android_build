@@ -49,9 +49,9 @@ if path.exists(defconfig):
         kernel_version = sub(r'(CONFIG_LOCALVERSION=)|\"|\n|-', "", prekernel_version.group(0))
         kernel_version = "%s-%s-kernel" % (kernel_version, device)
     else:
-        kernel_version = "%s-kernel" % device
+        kernel_version = "AOSPA-%s-kernel" % device
 else:
-    kernel_version = "%s-kernel" % device
+    kernel_version = "AOSPA-%s-kernel" % device
 
 updater = "%s/obj/EXECUTABLES/updater_intermediates/updater" % out
 signer = "%s/framework/signapk.jar" % environ['ANDROID_HOST_OUT']
@@ -129,9 +129,8 @@ with ZipFile("%s.zip" % zip_dir, "w") as zipper:
             zipper.write(fn, fn[rootlen:])
 
 # sign it
-security_dir =  "%s/build/target/product/security" % environ['ANDROID_BUILD_TOP']
-testkey_x = "%s/testkey.x509.pem" % security_dir
-testkey_p = "%s/testkey.pk8" % security_dir
+testkey_x = "%s/build/target/product/security/testkey.x509.pem" % source
+testkey_p = "%s/build/target/product/security/testkey.pk8" % source
 call(['java', '-jar', signer, testkey_x, testkey_p, "%s.zip" % zip_dir, "%s-signed.zip" % zip_dir])
 remove("%s.zip" % zip_dir)
 #rmtree(zip_dir)
