@@ -1367,11 +1367,11 @@ ifneq ($(recovery_fstab),)
 
 # -----------------------------------------------------------------
 # OTA update package && cache installer image
-name := $(TARGET_PRODUCT)-$(PSD_BUILD_NAME)
+name := $(TARGET_PRODUCT)
 ifeq ($(TARGET_BUILD_TYPE),debug)
   name := $(name)_debug
 endif
-name := $(name)
+name := $(name)-ota-$(FILE_NAME_TAG)
 
 INTERNAL_OTA_PACKAGE_TARGET := $(PRODUCT_OUT)/$(name).zip
 
