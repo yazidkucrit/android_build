@@ -1371,7 +1371,12 @@ name := $(TARGET_PRODUCT)
 ifeq ($(TARGET_BUILD_TYPE),debug)
   name := $(name)_debug
 endif
-name := $(name)-ota-$(FILE_NAME_TAG)
+DATE := $(shell date +%Y%m%d)
+ifneq ($(ODEX_BUILD),true)
+name := $(name)-ota-$(FILE_NAME_TAG)-$(DATE)
+else
+name := $(name)-ota-$(FILE_NAME_TAG)-odex-$(DATE)
+endif
 
 INTERNAL_OTA_PACKAGE_TARGET := $(PRODUCT_OUT)/$(name).zip
 
